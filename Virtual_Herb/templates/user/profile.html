@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block styling %}<link rel="stylesheet" href="/static/profile.css">{% endblock styling %}
+
+{% block title%}{% endblock title %}
+
+
+{% block content %}
+		
+<div class="row">
+
+	<!-- Profile Column -->
+	<div class="col-xs-4 col-md-3 my-3">
+		<div class="bg-light border rounded py-3 px-3">   
+			<img id="profile-image" class="img-fluid rounded" src="{{user.profile_pic}}"" alt="">
+			<h4 class="mb-3">{{user.username}} {% if current_user.id == user.id %} <a id="editUserBadge" class="align-middle badge badge-primary" href="/profile/{{current_user.id}}/edit">Edit</a>{% endif %}</h4>
+			{% if user.bio %}
+			<div class="mb-3">
+				<p><b>About</b></p>
+				<p>{{user.bio}}</p>
+			</div>
+			{% endif %}
+			{% if user.location %}
+			<div>
+				<p><b>Location</b></p>
+				<p>{{user.location}}</p>
+			</div>
+			{% endif %}
+			<hr class="my-3">
+			<div class="mb-3">
+				<p><b>{{specimen_count}} specimens</b></p>
+				<p><b>{{collection_count}} collections</b></p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Specimens Column -->
+	<div class="col-xs-12 col-s-9 col-md-9 col-lg-6 my-3">
+		<div class="px-3">
+			<div class="row mb-2 pt-2">
+				<div class="col">
+					<h3 class=""><u>Specimens</u></h3>
+				</div>
+				{% if current_user.id == user.id %}
+				<div class="col text-right">
+					<a class="btn btn-primary text-center badge badge-primary" href="/specimen/new/image">Create<br/>Specimen</a>
+				</div>
+				{% endif %}
+			</div>
+			<div class="row">
+				{% if specimens %}
+				<div class="card-columns">
+						{% for specimen in specimens %}
+						<div class="card d-inline-block bg-light rounded px-1 pb-1 mt-1 mb-2">
+								<div class="text-center p-1">
+										<a class="specimenName" href="/specimen/{{specimen.id}}">
+												<p class="lead">{{specimen.taxonomy.common_name}}</p>
+												<img class="img-fluid rounded border border-dark" src="{{specimen.link}}" alt="">
+										</a>
+								</div>  
+						</div>
+						{% endfor %}
+				</div>
+				{% else %}
+				{% if current_user.id == user.id %}
+				<p class="bg-light rounded lead text-center py-1 px-2 mt-2 text-danger">You don't have any specimens</p>
+				{% else %}
+				<p class="bg-light rounded lead text-center py-1 px-2 mt-2 text-danger">No specimens</p>
+				{% endif %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<!-- Collections Column -->
+	<div class="col-md-6 col-lg-3 my-3">
+		<div class="px-3">
+			<div class="row mb-1 pt-2">
+				<div class="col">
+					<h3 class=""><u>Collections</u></h3>
+				</div>
+				{% if current_user.id == user.id %}
+				<div class="col p-0 text-right">
+					<a class="btn btn-primary text-center badge badge-primary" href="/collection/new">Create<br/>Collection</a>
+				</div>
+				{% endif %}
+			</div>
+			
+			<div class="row">
+			{% if collections %}
+				{% for collection in collections %}
+				<div class="px-4 pb-1 mt-2 mb-3 bg-light rounded">
+						<a class="collectionName" href="/collection/{{collection.id}}">
+								<p class="lead text-center">{{collection.name}}</p>
+								<div class="collectionCollage row">
+										{% if not collection.specimens[0] %}
+										<p class="text-center text-danger">This collection is empty</p>
+										{% endif %}
+										<div class="col-9 p-1">
+												{% if collection.specimens[0] %}
+												<img class="img-fluid mainImg rounded" src="{{collection.specimens[0].link}}">
+												{% endif %}
+										</div>
+										<div class="secondaryImgs col-3 p-1">
+												{% if collection.specimens[1] %}
+												<div class="pb-1">
+														<img class="img-fluid rounded secondaryImg" src="{{collection.specimens[1].link}}">
+												</div>
+												{% endif %}
+												{% if collection.specimens[2] %}
+												<div>
+														<img class="img-fluid rounded secondaryImg" src="{{collection.specimens[2].link}}">
+												</div>
+												{% endif %}
+												{% if collection.specimens[3] %}
+												<div class="pt-1">
+														<img class="img-fluid rounded thirdImg" src="{{collection.specimens[3].link}}">
+												</div>
+												{% endif %}
+										</div>
+								</div>
+						</a>
+				</div> 
+				{% endfor %}
+				{% else %}
+				{% if current_user.id == user.id %}
+				<p class="bg-light rounded lead text-center py-1 px-2 mt-2 text-danger">You don't have any collections</p>
+				{% else %}
+				<p class="bg-light rounded lead text-center py-1 px-2 mt-2 text-danger">No collections</p>
+				{% endif %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+</div>
+
+{% endblock content %}

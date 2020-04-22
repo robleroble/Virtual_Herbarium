@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+    
+{% block styling %}
+<link rel="stylesheet" href="/static/specimendisplay.css">
+{% endblock styling %}
+
+
+{% block title %}{% endblock title %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+  <div class="image border rounded border-dark my-3">
+    <img id="img" class="img-fluid" src="{{specimen.link}}" alt="">
+    <div id="details" class="bg-light p-1">
+      <p class="text-uppercase text-center font-weight-bold mb-1">Plants of {{specimen.details.state}}</p>
+
+      <div class="mb-1">
+          <p class="text-uppercase font-weight-bold d-inline">{{specimen.taxonomy.family}}</p>
+          <p class="font-italic">{{specimen.taxonomy.species}} ({{specimen.taxonomy.authorship}})</p>
+      </div>
+
+      {% if specimen.details.county %}
+      <div class="text-left">
+          <p class="font-weight-bold text-uppercase d-inline">County: </p>
+          <p class="d-inline">{{specimen.details.county}}</p>
+      </div>
+      {% endif %}
+
+      {% if specimen.details.site_notes %}
+      <div class="mb-2">
+          <p class="font-weight-bold text-uppercase d-inline">Location: </p>
+          <p class="d-inline">{{specimen.details.site_notes}}</p>
+      </div>
+      {% endif %}
+
+      {% if specimen.details.habitat %}
+      <div class="mb-2">
+          <p class="font-weight-bold text-uppercase d-inline">Location: </p>
+          <p class="d-inline">{{specimen.details.habitat}}</p>
+      </div>
+      {% endif %}
+      
+      <div>
+          <p class="font-weight-bold text-uppercase d-inline">Collected by: </p>
+          <a href="/profile/{{specimen.user_id}}" class="d-inline">{{specimen.users.username}}</a>
+      </div>
+
+      <div class="mb-2">
+          <p class="font-weight-bold text-uppercase d-inline">Date: </p>
+          <p class="d-inline">{{specimen.details.date}}</p>
+      </div>
+
+      <div>
+          <p class="font-weight-bold text-uppercase d-inline">Notes: </p>
+          <p class="d-inline">{{specimen.details.notes}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% if current_user.id == specimen.users.id %}
+<div class="pb-3">
+  <div class="text-center">
+    <a class="btn btn-primary" href="/specimen/{{specimen.id}}/add_to_collection">Add to collection?</a>
+    <button class="btn btn-info" data-toggle="modal" data-target="#editModal">Edit</button>
+    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button>
+  </div>
+</div>
+{% endif %}
+
+
+
+
+{% if current_user.id == specimen.users.id %}
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Delete Specimen</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this specimen?
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form method="POST" action="/specimen/{{specimen.id}}/delete">
+            <button class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.id == specimen.users.id %}
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Specimen</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="">What do you want to change?</p>
+          <div class="row mt-1 justify-content-center">
+            <div class="col-6">
+              <a class="btn btn-primary btn-block" href="/specimen/{{specimen.id}}/edit_image">Image</a>
+            
+              <a class="btn btn-primary btn-block" href="/specimen/{{specimen.id}}/edit_taxonomy">Taxonomy</a>
+            
+              <a class="btn btn-primary btn-block" href="/specimen/{{specimen.id}}/edit_details">Collection Details</a>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock content %}

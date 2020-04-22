@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title%}{% endblock title %}
+
+
+{% block content %}
+
+<div class="container">
+	<div class="row justify-content-center mt-3">
+		<div class="col-xs-10 col-sm-8 col-md-6 col-lg-4 border rounded p-4 bg-light">
+			<h4 class="text-center mb-4">Edit profile</h4>
+			<hr>
+			<form method="POST">
+				{{ form.hidden_tag() }}
+				{% for field in form if field.widget.input_type != 'hidden' %}
+				<div class="form-group">
+					{{field.label}}
+					{{field(class_="form-control")}}
+					{% for err in field.errors %}
+						<small class="form-text text-danger">
+							{{err}}
+						</small>
+						{% endfor %}
+				</div>
+				{% endfor %}
+                <button class="btn btn-primary btn-block mt-4">Update!</button>
+            </form>
+            <a href="/profile/{{current_user.id}}" class="btn btn-secondary btn-block mt-2">Go back</a>
+            <button class="btn btn-danger btn-block" data-toggle="modal" data-target="#deleteProfile">Delete Profile</a>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="deleteProfile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your profile? This will delete all of your specimens!
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a href="/profile/{{current_user.id}}/delete" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

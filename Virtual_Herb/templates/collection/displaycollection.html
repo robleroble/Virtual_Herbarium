@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block styling %}<link rel="stylesheet" href="/static/profile.css">{% endblock styling %}
+
+{% block title%}{% endblock title %}
+
+
+{% block content %}
+
+    
+<div class="row my-3">
+  <div class="col-md-3">
+  <div class="bg-light border rounded py-3 px-3">   
+    <h4 class="my-1">{{collection.name}}</h4>
+    <div class="mb-2">
+      <p class="d-inline">Created by: </p>
+      <a href="/profile/{{collection.user_id}}">{{user.username}}</a>
+    </div>
+    {% if collection.info %}
+    <hr class="my-3">
+    <p>{{collection.info}}</p>
+    {% endif %}
+    {% if current_user.id == user.id %}
+    <hr class="my-3">
+    <a class="btn btn-primary btn-block" href="/collection/{{collection.id}}/edit">Edit Collection</a>
+    <button class="btn btn-danger btn-block" data-toggle="modal" data-target="#deleteCollection">Delete Collection</button>
+    {% endif %}
+  </div>
+</div>
+
+  
+  {% if num_specimens > 0 %}
+  <div class="col-md-9">
+  <div class="px-4">
+      
+  <div class="row">
+    <div class="card-columns">
+      {% for specimen in specimens_in_collection %}
+      <div class="card d-inline-block bg-light px-3 py-1">
+          <a class="specimenName" href="/specimen/{{specimen.id}}">
+              <p class="lead text-center">{{specimen.taxonomy.common_name}}</p>
+              <img class="img-fluid rounded-lg border border-dark" src="{{specimen.link}}" alt="">
+          </a>
+          {% if current_user.id == user.id %}
+          <form method="POST" action="/collection/{{collection.id}}/remove_specimen/{{specimen.id}}">
+            <button class="badge btn btn-danger btn-block" >Remove from Collection</button>
+          </form>
+          {% endif %}
+      </div>  
+      {% endfor %} 
+  </div>
+  </div>
+  
+</div>
+{% endif %}
+
+</div>
+
+{% if current_user.id == collection.user_id %}
+<div class="modal fade" id="deleteCollection" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Delete Collection</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this collection?
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form method="POST" action="/collection/{{collection.id}}/delete">
+            <button class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+
+
+
+{% endblock content %}
+
+
+
+<!-- {% for specimen in specimens_in_collection %}
+      <div class="col-md-3 col-sm-6 text-center p-2">
+          <a class="specimenName" href="/specimen/{{specimen.id}}">
+              <p class="lead">{{specimen.taxonomy.common_name}}</p>
+              <img class="img-fluid rounded-lg border border-dark" src="{{specimen.link}}" alt="">
+          </a>
+          {% if current_user.id == user.id %}
+          <form method="POST" action="/collection/{{collection.id}}/remove_specimen/{{specimen.id}}">
+            <button class="badge btn btn-danger btn-block" >Remove from Collection</button>
+          </form>
+          {% endif %}
+      </div>  
+      {% endfor %} 
+  </div>
+  </div> -->
