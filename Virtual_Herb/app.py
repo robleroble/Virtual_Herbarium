@@ -30,9 +30,8 @@ from flask_login import (
     logout_user,
     current_user,
 )
+from extra_funcs import clear_specimen_session, upload_img
 from imgurkeys import client_id
-
-# from imgurAPI import upload_img
 
 app = Flask(__name__)
 
@@ -101,7 +100,7 @@ def signup():
             return redirect("/signup")
 
         login_user(user)
-
+        flash(f"Welcome {user.username}!", "success")
         return redirect(f"/profile/{user.id}")
     else:
         return render_template("user/signup.html", form=form)
@@ -130,6 +129,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash("You are now logged out.", "success")
     return redirect("/")
 
 
@@ -173,12 +173,14 @@ def edit_profile(user_id):
             user.location = form.location.data
             if form.img_url.data == "":
                 db.session.commit()
+                flash("Profile changes saved!", "success")
                 return redirect(f"/profile/{user.id}")
             else:
                 user.profile_pic = form.img_url.data
 
             db.session.commit()
 
+            flash("Profile changes saved!", "success")
             return redirect(f"/profile/{user.id}")
 
         else:
@@ -191,18 +193,17 @@ def edit_profile(user_id):
 @app.route("/profile/<int:user_id>/delete", methods=["POST"])
 @login_required
 def delete_profile(user_id):
-    """Displays form for user to delete (GET) and submits form (POST)"""
+    """Route deletes current_user"""
 
     if current_user.id == user_id:
-        user = current_user
+        user = User.query.get_or_404(user_id)
 
-        if not user:
-            flash("You are not allowed to delete another user's specimen!", "danger")
-            return redirect(f"/specimen/{specimen_id}")
+        logout_user()
 
         db.session.delete(user)
         db.session.commit()
 
+        flash("Account deleted!", "success")
         return redirect("/")
     else:
         return ("", 403)
@@ -210,31 +211,6 @@ def delete_profile(user_id):
 
 #######################################################
 # Specimen routes
-
-# SPECIMEN HELPER FUNCTIONS
-def clear_specimen_session():
-    """Clears the session of all specimen form information"""
-
-    specimen_info = [
-        "link",
-        "common_name",
-        "species",
-        "genus",
-        "family",
-        "order",
-        "phylum",
-        "kingdom",
-        "authorship",
-        "date",
-        "location",
-        "county",
-        "state",
-        "habitat",
-        "notes",
-    ]
-
-    for info in specimen_info:
-        session.pop(info, None)
 
 
 @app.route("/specimen/new/image", methods=["GET", "POST"])
@@ -311,11 +287,11 @@ def create_specimen_details():
             db.session.add(new_image)
             db.session.commit()
 
-            specimen_id = Specimen.query.filter_by(link=session["link"]).first()
+            specimen = Specimen.query.filter_by(link=session["link"]).first()
 
             new_specimen_taxonomy = Taxonomy(
                 common_name=session["common_name"],
-                specimen_id=specimen_id.id,
+                specimen_id=specimen.id,
                 species=session["species"],
                 genus=session["genus"],
                 family=session["family"],
@@ -326,7 +302,7 @@ def create_specimen_details():
             )
 
             new_specimen_details = Details(
-                specimen_id=specimen_id.id,
+                specimen_id=specimen.id,
                 date=session["date"],
                 location=session["location"],
                 habitat=session["habitat"],
@@ -341,7 +317,8 @@ def create_specimen_details():
 
             clear_specimen_session()
 
-            return redirect(f"/profile/{current_user.id}")
+            flash(f"{specimen.taxonomy.common_name} specimen created!", "success")
+            return redirect(f"/specimen/{specimen.id}")
 
         else:
             return render_template(
@@ -370,14 +347,15 @@ def delete_specimen(specimen_id):
 
     specimen = Specimen.query.get_or_404(specimen_id)
 
-    if current_user.id != specimen.user_id:
-        flash("You are not allowed to delete another user's specimen!", "danger")
-        return redirect(f"/specimen/{specimen_id}")
+    if current_user.id == specimen.user_id:
 
-    db.session.delete(specimen)
-    db.session.commit()
+        db.session.delete(specimen)
+        db.session.commit()
 
-    return redirect(f"/profile/{current_user.id}")
+        flash("Specimen deleted!", "success")
+        return redirect(f"/profile/{current_user.id}")
+    else:
+        return ("", 403)
 
 
 # EDIT SPECIMEN - IMAGE
@@ -398,7 +376,7 @@ def edit_image(specimen_id):
                 specimen.link = upload.get("data").get("link")
                 db.session.commit()
 
-                return redirect(f"/specimen/{specimen.id}")
+                return redirect(f"/specimen/{specimen_id}")
 
         else:
             return render_template(
@@ -497,6 +475,7 @@ def add_specimen_to_collection(specimen_id):
 
         db.session.add(new_collection_specimen)
         db.session.commit()
+        flash(f"{specimen.taxonomy.common_name} added to collection!", "success")
         return redirect(f"/collection/{form.collection.data}")
 
     return render_template(
@@ -522,6 +501,7 @@ def create_collection():
         db.session.add(new_collection)
         db.session.commit()
 
+        flash(f"{name} collection created!", "success")
         return redirect(f"/profile/{current_user.id}")
 
     else:
@@ -554,18 +534,22 @@ def edit_specimen(collection_id):
     collection = Collection.query.filter_by(id=collection_id).first()
     form = CollectionForm(obj=collection)
 
-    if form.validate_on_submit():
-        collection.name = form.name.data
-        collection.info = form.info.data
+    if current_user.id == collection.user_id:
+        if form.validate_on_submit():
+            collection.name = form.name.data
+            collection.info = form.info.data
 
-        db.session.commit()
+            db.session.commit()
 
-        return redirect(f"/collection/{collection.id}")
+            flash(f"{collection.name} edited!", "success")
+            return redirect(f"/collection/{collection.id}")
 
+        else:
+            return render_template(
+                "collection/editcollection.html", form=form, collection=collection
+            )
     else:
-        return render_template(
-            "collection/editcollection.html", form=form, collection=collection
-        )
+        return ("", 403)
 
 
 @app.route("/collection/<int:collection_id>/delete", methods=["POST"])
@@ -576,6 +560,7 @@ def delete_collection(collection_id):
     db.session.delete(collection)
     db.session.commit()
 
+    flash(f"{collection.name} collection deleted", "success")
     return redirect(f"/profile/{current_user.id}")
 
 
@@ -591,25 +576,17 @@ def remove_specimen_from_collection(collection_id, specimen_id):
         CollectionSpecimen.specimen_id == specimen_id,
     ).first()
 
-    db.session.delete(collection_specimen)
-    db.session.commit()
+    specimen = Specimen.query.get_or_404(specimen_id)
+    collection = Collection.query.get_or_404(collection_id)
 
-    return redirect(f"/collection/{collection_id}")
+    if current_user.id == collection.user_id == specimen.user_id:
+        db.session.delete(collection_specimen)
+        db.session.commit()
 
-
-#############################
-# Imgur uploader function
-
-
-def upload_img(img):
-    url = "https://api.imgur.com/3/image"
-
-    data = {"image": img}
-
-    headers = {"Authorization": client_id}
-
-    resp = requests.post(url, headers=headers, data=data)
-
-    return resp.json()
-
-    # if len(c_form.collection.choices) > 0:
+        flash(
+            f"{specimen.taxonomy.common_name} successfully removed from {collection.name}!",
+            "success",
+        )
+        return redirect(f"/collection/{collection_id}")
+    else:
+        return ("", 403)

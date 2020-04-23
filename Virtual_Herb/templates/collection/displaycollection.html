@@ -6,7 +6,9 @@
 
 
 {% block content %}
-
+{% for category, message in get_flashed_messages(with_categories=True) %}
+<div class="alert alert-{{ category }}">{{ message }}</div>
+{% endfor %}
     
 <div class="row my-3">
   <div class="col-md-3">
@@ -55,6 +57,7 @@
 {% endif %}
 
 </div>
+</div>
 
 {% if current_user.id == collection.user_id %}
 <div class="modal fade" id="deleteCollection" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -85,21 +88,3 @@
 
 
 {% endblock content %}
-
-
-
-<!-- {% for specimen in specimens_in_collection %}
-      <div class="col-md-3 col-sm-6 text-center p-2">
-          <a class="specimenName" href="/specimen/{{specimen.id}}">
-              <p class="lead">{{specimen.taxonomy.common_name}}</p>
-              <img class="img-fluid rounded-lg border border-dark" src="{{specimen.link}}" alt="">
-          </a>
-          {% if current_user.id == user.id %}
-          <form method="POST" action="/collection/{{collection.id}}/remove_specimen/{{specimen.id}}">
-            <button class="badge btn btn-danger btn-block" >Remove from Collection</button>
-          </form>
-          {% endif %}
-      </div>  
-      {% endfor %} 
-  </div>
-  </div> -->

@@ -1,6 +1,7 @@
 from unittest import TestCase
 from app import app
 
+
 from models import (
     db,
     User,
@@ -23,12 +24,11 @@ db.create_all()
 
 
 class TestAnonymousUserSpecimenViews(TestCase):
-    """Test to make sure anonymous users can't create/edit/delete specimens"""
+    """Tests to make sure anonymous user can't create/edit/delete collections"""
 
     def setUp(self):
-        """create test user and specimens"""
+        """Creates test user and specimens"""
 
-        # db.session.close()
         db.drop_all()
         db.create_all()
 
@@ -62,7 +62,18 @@ class TestAnonymousUserSpecimenViews(TestCase):
             notes="No Notes",
         )
 
-        db.session.add_all([specimen1, specimen1taxonomy, specimen1details])
+        collection1 = Collection(
+            user_id=11,
+            name="Test Collection",
+            info="Here is some generic test text about this collection.",
+        )
+
+        collection1id = 13
+        collection1.id = collection1id
+
+        db.session.add_all(
+            [specimen1, specimen1taxonomy, specimen1details, collection1]
+        )
         db.session.commit()
 
     def tearDown(self):
@@ -71,78 +82,76 @@ class TestAnonymousUserSpecimenViews(TestCase):
         return resp
 
     def test_specimen_page_anon(self):
-        """test the /specimen/<id> page for anon user"""
+        """Test view specimen page for no "add to collection" btn for anon user"""
         with app.test_client() as client:
             resp = client.get("/specimen/12")
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Quercus", html)
-            self.assertNotIn("Edit", html)
+            self.assertNotIn("Add to collection", html)
 
-    def test_edit_specimen_img_anon(self):
-        """Test if anonymous user can access edit specimen image page (they shouldn't)"""
+    def test_profile_page_anon(self):
+        """Tests to be sure there is no 'Create Collection' button for anon user"""
         with app.test_client() as client:
-            resp = client.get("/specimen/12/edit_image")
+            resp = client.get("/profile/11")
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("tester1", html)
+            self.assertNotIn(">Create<br/>Collection", html)
+
+    def test_create_collection_page_anon(self):
+        """Tests if anon user can go to create collection page"""
+        with app.test_client() as client:
+            resp = client.get("/collection/new")
 
             self.assertEqual(resp.status_code, 401)
 
-    def test_edit_specimen_taxonomy_anon(self):
-        """Test if anonymous user can access edit specimen taxonomy page (they shouldn't)"""
+    def test_collection_edit_page_anon(self):
+        """Tests collection page for anon user"""
         with app.test_client() as client:
-            resp = client.get("/specimen/12/edit_taxonomy")
+            resp = client.get("/collection/13")
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Test Collection", html)
+            self.assertNotIn("Delete Collection", html)
+            self.assertNotIn("Edit Collection", html)
+
+    def test_edit_collection_anon(self):
+        """Test if anon user can access edit collection page"""
+        with app.test_client() as client:
+            resp = client.get("/collection/13/edit")
+            html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 401)
 
-    def test_edit_specimen_details_anon(self):
-        """Test if anonymous user can access edit specimen details page (they shouldn't)"""
-        with app.test_client() as client:
-            resp = client.get("/specimen/12/edit_details")
-
-            self.assertEqual(resp.status_code, 401)
-
-    # # Need to figure out how to test file input forms
-    # def test_edit_specimen_link_anon(self):
-    #     """Test if anon user can post a change to the image url"""
-
-    def test_edit_specimen_taxonomy_species_anon(self):
-        """Test if anon user can edit a specimens species name (they shouldn't)"""
+    def test_post_edit_collection_anon(self):
+        """Test if anon user can edit a collection"""
         with app.test_client() as client:
             resp = client.post(
-                "/specimen/12/edit_taxonomy", data={"species": "Notquercus rubra"}
+                "/collection/13/edit", data={"name": "Not a test collection"}
             )
-            specimen = Specimen.query.get(12)
+            collection = Collection.query.get(13)
 
-            self.assertEqual(specimen.taxonomy.species, "Quercus rubra")
+            self.assertEqual(collection.name, "Test Collection")
             self.assertEqual(resp.status_code, 401)
 
-    def test_edit_specimen_details_notes_anon(self):
-        """Test if anon user can edit a specimen's collection notes (they shouldn't)"""
+    def test_delete_collection_anon(self):
+        """Test if anonymous user can delete a collection"""
         with app.test_client() as client:
-            resp = client.post(
-                "/specimen/12/edit_details", data={"notes": "Now we have notes!"}
-            )
-
-            specimen = Specimen.query.get(12)
-
-            self.assertNotEqual(specimen.details.notes, "Now we have notes!")
-            self.assertEqual(resp.status_code, 401)
-
-    def test_delete_specimen_anon(self):
-        """Test if anon user can delete a specimen"""
-        with app.test_client() as client:
-            resp = client.post("/specimen/12/delete")
+            resp = client.post("/collection/13/delete")
 
             self.assertEqual(resp.status_code, 401)
 
 
 class TestLoggedInUserSpecimenViews(TestCase):
-    """Create specimen, taxonomy, details and check if they all work"""
+    """Tests to make sure anonymous user can't create/edit/delete collections"""
 
     def setUp(self):
-        """create test user and specimens"""
+        """Creates test user and specimens"""
 
-        # db.session.close()
         db.drop_all()
         db.create_all()
 
@@ -176,7 +185,18 @@ class TestLoggedInUserSpecimenViews(TestCase):
             notes="No Notes",
         )
 
-        db.session.add_all([specimen1, specimen1taxonomy, specimen1details])
+        collection1 = Collection(
+            user_id=11,
+            name="Test Collection",
+            info="Here is some generic test text about this collection.",
+        )
+
+        collection1id = 13
+        collection1.id = collection1id
+
+        db.session.add_all(
+            [specimen1, specimen1taxonomy, specimen1details, collection1]
+        )
         db.session.commit()
 
     def tearDown(self):
@@ -185,7 +205,7 @@ class TestLoggedInUserSpecimenViews(TestCase):
         return resp
 
     def test_specimen_page_logged_in(self):
-        """test the /specimen/<id> page for logged-in user"""
+        """Test view specimen page for "add to collection" btn for logged-in user"""
         with app.test_client() as client:
             client.post(
                 "/login",
@@ -197,56 +217,69 @@ class TestLoggedInUserSpecimenViews(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Quercus", html)
-            self.assertIn("Edit", html)
+            self.assertIn("Add to collection", html)
 
-    def test_edit_specimen_img_logged_in(self):
-        """Test if logged-in user can access edit specimen image page"""
+    def test_profile_page_logged_in(self):
+        """Tests to be sure there is 'Create Collection' button for logged-in user"""
         with app.test_client() as client:
             client.post(
                 "/login",
                 data={"username": "tester1", "password": "password1"},
                 follow_redirects=True,
             )
-            resp = client.get("/specimen/12/edit_image")
+            resp = client.get("/profile/11")
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn("Upload a new image of your specimen", html)
+            self.assertIn("tester1", html)
+            self.assertIn("Create<br/>Collection", html)
 
-    def test_edit_specimen_taxonomy_logged_in(self):
-        """Test if logged-in user can access edit specimen taxonomy page"""
+    def test_create_collection_page_logged_in(self):
+        """Tests if logged-in user can go to create collection page"""
         with app.test_client() as client:
             client.post(
                 "/login",
                 data={"username": "tester1", "password": "password1"},
                 follow_redirects=True,
             )
-            resp = client.get("/specimen/12/edit_taxonomy")
+            resp = client.get("/collection/new")
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn("Edit specimen name and taxonomy information", html)
+            self.assertIn("Create a new collection!", html)
 
-    def test_edit_specimen_details_anon(self):
-        """Test if anonymous user can access edit specimen details page (they shouldn't)"""
+    def test_collection_edit_page_logged_in(self):
+        """Tests collection page for logged-in (should have edit and delete collection btns)"""
         with app.test_client() as client:
             client.post(
                 "/login",
                 data={"username": "tester1", "password": "password1"},
                 follow_redirects=True,
             )
-            resp = client.get("/specimen/12/edit_details")
+            resp = client.get("/collection/13")
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn("Edit collection details", html)
+            self.assertIn("Test Collection", html)
+            self.assertIn("Delete Collection", html)
+            self.assertIn("Edit Collection", html)
 
-    # # Need to figure out how to test file input forms
-    # def test_edit_specimen_link_anon(self):
-    #     """Test if anon user can post a change to the image url"""
+    def test_edit_collection_logged_in(self):
+        """Test if logged-in user can access edit collection page"""
+        with app.test_client() as client:
+            client.post(
+                "/login",
+                data={"username": "tester1", "password": "password1"},
+                follow_redirects=True,
+            )
+            resp = client.get("/collection/13/edit")
+            html = resp.get_data(as_text=True)
 
-    def test_edit_specimen_taxonomy_species_logged_in(self):
-        """Test if logged-in user can edit a specimens species name"""
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Edit collection", html)
+
+    def test_post_edit_collection_logged_in(self):
+        """Test if logged-in user can edit a collection"""
         with app.test_client() as client:
             client.post(
                 "/login",
@@ -254,51 +287,27 @@ class TestLoggedInUserSpecimenViews(TestCase):
                 follow_redirects=True,
             )
             resp = client.post(
-                "/specimen/12/edit_taxonomy",
-                data={"species": "Notquercus rubra"},
+                "/collection/13/edit",
+                data={"name": "Not a test collection"},
                 follow_redirects=True,
             )
-            html = resp.get_data(as_text=True)
-            specimen = Specimen.query.get(12)
+            collection = Collection.query.get(13)
 
-            self.assertEqual(specimen.taxonomy.species, "Notquercus rubra")
-            self.assertIn("Notquercus rubra", html)
+            self.assertEqual(collection.name, "Not a test collection")
             self.assertEqual(resp.status_code, 200)
 
-    def test_edit_specimen_details_notes_logged_in(self):
-        """Test if logged-in user can edit a specimen's collection notes"""
+    def test_delete_collection_logged_in(self):
+        """Test if logged-in user can delete a collection"""
         with app.test_client() as client:
             client.post(
                 "/login",
                 data={"username": "tester1", "password": "password1"},
                 follow_redirects=True,
             )
-            resp = client.post(
-                "/specimen/12/edit_details",
-                data={"notes": "Now we have notes!"},
-                follow_redirects=True,
-            )
+            resp = client.post("/collection/13/delete", follow_redirects=True)
             html = resp.get_data(as_text=True)
 
-            specimen = Specimen.query.get(12)
-
-            self.assertEqual(specimen.details.notes, "Now we have notes!")
-            self.assertIn("Now we have notes!", html)
-            self.assertEqual(resp.status_code, 200)
-
-    def test_delete_specimen_logged_in(self):
-        """Test if logged-in user can delete a specimen"""
-        with app.test_client() as client:
-            client.post(
-                "/login",
-                data={"username": "tester1", "password": "password1"},
-                follow_redirects=True,
-            )
-            resp = client.post("/specimen/12/delete", follow_redirects=True)
-            html = resp.get_data(as_text=True)
-
-            specimens = Specimen.query.filter_by(user_id=11).all()
-
-            self.assertEqual(len(specimens), 0)
-            self.assertIn("You don't have any specimens", html)
+            collections = Collection.query.filter_by(user_id=11).all()
+            self.assertEqual(len(collections), 0)
+            self.assertIn("You don't have any collections", html)
             self.assertEqual(resp.status_code, 200)
