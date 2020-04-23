@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath Virtual_Herb app.app
+web: gunicorn Virtual_Herb.app.app
