@@ -1,1 +1,1 @@
-web: gunicorn Virtual_Herb.app:app
+web: gunicorn app:app
