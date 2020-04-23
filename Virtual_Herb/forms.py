@@ -41,7 +41,7 @@ class SignupForm(FlaskForm):
     )
     bio = TextAreaField("About (Optional)")
     location = StringField("Location (Optional)")
-    img_url = URLField("Profile Picture (Optional)", validators=[Optional(), url()])
+    img_url = URLField("Profile Picture as URL (Optional)", validators=[Optional(), url()])
 
 
 class EditUserForm(FlaskForm):
@@ -54,9 +54,9 @@ class EditUserForm(FlaskForm):
             Length(min=4, message="Username must be at least 4 characters."),
         ],
     )
-    bio = TextAreaField("About")
-    location = StringField("Location")
-    img_url = URLField("Profile Picture", validators=[Optional(), url()])
+    bio = TextAreaField("About (Optional)")
+    location = StringField("Location (Optional)")
+    img_url = URLField("Profile Picture as URL (Optional)", validators=[Optional(), url()])
 
 
 class LoginForm(FlaskForm):
@@ -81,32 +81,32 @@ class SpecimenImageForm(FlaskForm):
 class TaxonomyForm(FlaskForm):
     """Form for taxonomy information"""
 
-    common_name = StringField("Common Name")
-    species = StringField("Species")
-    genus = StringField("Genus")
-    family = StringField("Family")
-    order = StringField("Order")
-    phylum = StringField("Phylum")
-    kingdom = StringField("Kingdom")
-    authorship = StringField("Authorship")
+    common_name = StringField("Common Name (Optional)")
+    species = StringField("Species (Optional)")
+    genus = StringField("Genus (Optional)")
+    family = StringField("Family (Optional)")
+    order = StringField("Order (Optional)")
+    phylum = StringField("Phylum (Optional)")
+    kingdom = StringField("Kingdom (Optional)")
+    authorship = StringField("Authorship (Optional)")
 
 
 class CollectionDetailsForm(FlaskForm):
     """Form for collection details"""
 
-    date = StringField("Date Collected")
-    location = StringField("Location")
-    habitat = StringField("Habitat")
-    county = StringField("County")
-    state = StringField("State")
-    notes = TextAreaField("Notes")
+    date = StringField("Date Collected (Optional)")
+    location = StringField("Location (Optional)")
+    habitat = StringField("Habitat (Optional)")
+    county = StringField("County (Optional)")
+    state = StringField("State (Optional)")
+    notes = TextAreaField("Notes (Optional)")
 
 
 class CollectionForm(FlaskForm):
     """Form for collection"""
 
     name = StringField("Name of Collection", validators=[DataRequired()])
-    info = TextAreaField("About this Collection")
+    info = TextAreaField("About this Collection (Optional)")
 
 
 class AddSpecimenToCollectionForm(FlaskForm):
