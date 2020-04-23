@@ -32,7 +32,6 @@ from flask_login import (
     current_user,
 )
 from extra_funcs import clear_specimen_session, upload_img
-from imgurkeys import client_id
 
 app = Flask(__name__)
 
@@ -41,6 +40,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY', 'hellosecret1')
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
+app.config["ImgurKey"] = os.environ.get('IMGUR_KEY")
 
 
 connect_db(app)

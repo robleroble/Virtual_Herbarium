@@ -1,6 +1,6 @@
 import requests
 from flask import session
-from imgurkeys import client_id
+# from imgurkeys import client_id
 
 
 def clear_specimen_session():
@@ -37,7 +37,7 @@ def upload_img(img):
 
     data = {"image": img}
 
-    headers = {"Authorization": client_id}
+    headers = {"Authorization": "Client-ID d5abbfd23ff9199"}
 
     resp = requests.post(url, headers=headers, data=data)
 
