@@ -1,7 +1,3 @@
-Virtual_Herb/venv/
-ToDos.py
-__pycache__/
-imgurkeys.py
-Virtual_Herb/.vscode/settings.json
-Virtual_Herb/.vscode/
-venv/
+virtherb_app/venv/
+virtherb_app/__pycache__/
+virtherb_app/imgurkeys

@@ -40,13 +40,11 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY', 'hellosecret1')
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
-app.config["ImgurKey"] = os.environ.get('IMGUR_KEY")
+# app.config["ImgurKey"] = os.environ.get('IMGUR_KEY")
 
 
 connect_db(app)
 db.create_all()
-# debug = DebugToolbarExtension(app)
-
 
 ###############################
 # flask_login routes
