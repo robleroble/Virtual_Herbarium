@@ -1,3 +1,3 @@
 virtherb_app/venv/
 virtherb_app/__pycache__/
-virtherb_app/imgurkeys
+virtherb_app/imgurkeys.py
