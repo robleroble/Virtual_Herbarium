@@ -76,14 +76,14 @@ def edit_profile(user_id):
             if form.img_url.data == "":
                 db.session.commit()
                 flash("Profile changes saved!", "success")
-                return redirect(f"/profile/{user.id}")
+                return redirect(f"/user/{user.id}")
             else:
                 user.profile_pic = form.img_url.data
 
             db.session.commit()
 
             flash("Profile changes saved!", "success")
-            return redirect(f"/profile/{user.id}")
+            return redirect(f"/user/{user.id}")
 
         else:
             return render_template("edituser.html", form=form)

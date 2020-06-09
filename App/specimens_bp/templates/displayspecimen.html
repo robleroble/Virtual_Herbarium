@@ -38,16 +38,23 @@
       </div>
       {% endif %}
 
-      {% if specimen.details.habitat %}
+      {% if specimen.details.location %}
       <div class="mb-2">
           <p class="font-weight-bold text-uppercase d-inline">Location: </p>
+          <p class="d-inline">{{specimen.details.location}}</p>
+      </div>
+      {% endif %}
+
+      {% if specimen.details.habitat %}
+      <div class="mb-2">
+          <p class="font-weight-bold text-uppercase d-inline">Habitat: </p>
           <p class="d-inline">{{specimen.details.habitat}}</p>
       </div>
       {% endif %}
       
       <div>
           <p class="font-weight-bold text-uppercase d-inline">Collected by: </p>
-          <a href="/profile/{{specimen.user_id}}" class="d-inline">{{specimen.users.username}}</a>
+          <a href="/user/{{specimen.user_id}}" class="d-inline">{{specimen.users.username}}</a>
       </div>
 
       <div class="mb-2">
@@ -55,10 +62,12 @@
           <p class="d-inline">{{specimen.details.date}}</p>
       </div>
 
+      {% if specimen.details.notes %}
       <div>
           <p class="font-weight-bold text-uppercase d-inline">Notes: </p>
           <p class="d-inline">{{specimen.details.notes}}</p>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>

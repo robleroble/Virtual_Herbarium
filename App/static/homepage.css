@@ -1,16 +1,15 @@
-/* #background {
-	background-image: url('/static/images/planties.jpg');
-	background-size: cover;
-	background-repeat: no-repeat;
-	height: 100vh;
-} */
-
 .col-9 {
 	height: 70vh;
 }
 
 .card {
 	position: relative;
+}
+
+.card-img-top {
+	width: 100%;
+	height: 15vw;
+	object-fit: cover;
 }
 
 .badge {
