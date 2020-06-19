@@ -1,9 +1,8 @@
-import requests, random
+import random
 import os
 from flask import Flask, render_template, redirect, flash, request, session, Blueprint
 from models import (
     db,
-    connect_db,
     User,
     Specimen,
     Details,
@@ -12,23 +11,16 @@ from models import (
     CollectionSpecimen,
 )
 from forms import (
-    SignupForm,
-    LoginForm,
     SpecimenImageForm,
+    ImageURLForm,
     TaxonomyForm,
     CollectionDetailsForm,
     EditUserForm,
-    CollectionForm,
     AddSpecimenToCollectionForm,
 )
-from flask_debugtoolbar import DebugToolbarExtension
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 from flask_login import (
-    LoginManager,
-    login_user,
     login_required,
-    logout_user,
     current_user,
 )
 from extra_funcs import clear_specimen_session, upload_img
@@ -57,6 +49,7 @@ def create_specimen_image():
     clear_specimen_session()
     # STEP 1: UPLOAD IMAGE
     form = SpecimenImageForm()
+    urlForm = ImageURLForm()
     if form.validate_on_submit():
         if request.files:
             image = request.files["image"]
@@ -66,8 +59,12 @@ def create_specimen_image():
             session["link"] = upload.get("data").get("link")
 
             return redirect("/specimen/new/taxonomy")
+    elif urlForm.validate_on_submit():
+        session["link"] = urlForm.image.data
+
+        return redirect("/specimen/new/taxonomy")
     else:
-        return render_template("newspecimen.html", form=form, step="image")
+        return render_template("newspecimen.html", form=form, urlForm=urlForm, step="image")
 
 
 @specimens_bp.route("/specimen/new/taxonomy", methods=["GET", "POST"])

@@ -1,37 +1,19 @@
-import requests, random
-import os
-from flask import Flask, render_template, redirect, flash, request, session, Blueprint
+from flask import Flask, render_template, redirect, flash, session, Blueprint
 from models import (
     db,
-    connect_db,
     User,
-    Specimen,
-    Details,
-    Taxonomy,
-    Collection,
-    CollectionSpecimen,
 )
 from forms import (
     SignupForm,
     LoginForm,
-    SpecimenImageForm,
-    TaxonomyForm,
-    CollectionDetailsForm,
-    EditUserForm,
-    CollectionForm,
-    AddSpecimenToCollectionForm,
 )
-from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 from flask_login import (
-    LoginManager,
     login_user,
     login_required,
     logout_user,
-    current_user,
 )
-from extra_funcs import clear_specimen_session, upload_img
 
 auth_bp = Blueprint('auth_bp', __name__, template_folder='templates', static_folder='static')
 

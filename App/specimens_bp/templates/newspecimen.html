@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title%}{% endblock title %}
-
+{% block styling %}<link rel="stylesheet" href="/static/form.css" >{% endblock styling %}
 
 {% block content %}
 
@@ -11,8 +11,10 @@
 	<div class="row justify-content-center align-items-center mt-3">
 		<div class="col-xs-10 col-sm-8 col-md-6 col-lg-4 border rounded p-4 bg-light">
 			<h4 class="text-center mb-4">Upload an image of your specimen!</h4>
+			<button id="toggleForm" class="btn btn-warning">URL?</button>
 			<hr/>
-			<form method="POST" enctype="multipart/form-data">
+			<div id="formHolder">
+			<form id="uploadForm" class="" method="POST" enctype="multipart/form-data">
 				{{ form.hidden_tag() }}
 				{% for field in form if field.widget.input_type != 'hidden' %}
 				<div class="form-group">
@@ -26,6 +28,25 @@
 				{% endfor %}
 				<button class="btn btn-primary btn-block mt-4">Next Step</button>
 			</form>
+
+			<form id="urlForm" class="hidden" method="POST">
+				{{ urlForm.hidden_tag() }}
+				{% for field in urlForm if field.widget.input_type != "hidden" %}
+				<div class="form-group">
+					{{field(class_="form-control", placeholder = field.label.text)}}
+					{% for err in field.errors %}
+						<small class="form-text text-danger">
+							{{err}}
+						</small>
+						{% endfor %}
+				</div>
+				{% endfor %}
+				<button class="btn btn-primary btn-block mt-4">Next Step</button>
+			</form>
+			
+		</div>
+
+
 		</div>
 	</div>
 </div>
@@ -84,3 +105,7 @@
 {% endif %}
 
 {% endblock content %}
+
+{% block jsFile %}
+<script src="/static/form.js"></script>
+{% endblock jsFile %}

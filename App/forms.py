@@ -77,6 +77,10 @@ class SpecimenImageForm(FlaskForm):
         ],
     )
 
+class ImageURLForm(FlaskForm):
+    """Form to input an image URL"""
+    image = URLField("Specimen Image", validators=[DataRequired(), url()])
+
 
 class TaxonomyForm(FlaskForm):
     """Form for taxonomy information"""

@@ -17,24 +17,29 @@ i {
 	position: relative;
 }
 
-.mainImg {
-	height: 100%;
+.mainImgCol {
 	width: 100%;
+	padding-top: 100%;
+	position: relative;
+}
+.mainImg {
+	/* height: 100%; */
+	/* width: 100%; */
 	object-fit: cover;
 }
 
 .secondaryImg {
-	height: 33%;
-	width: 100%;
+	/* height: 33%; */
+	/* width: 100%; */
 	object-fit: cover;
 	border-radius: 10%;
 }
 
 .thirdImg {
-	height: 34%;
+	height: 100%;
 	width: 100%;
 	object-fit: cover;
-	border-radius: 10%;
+	/* border-radius: 10%; */
 }
 
 .collectionName,

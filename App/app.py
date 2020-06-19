@@ -1,37 +1,15 @@
-import requests, random
 import os
-from flask import Flask, render_template, redirect, flash, request, session, Blueprint
+from flask import Flask, render_template, Blueprint
 from models import (
     db,
     connect_db,
-    User,
-    Specimen,
-    Details,
-    Taxonomy,
-    Collection,
-    CollectionSpecimen,
+    User
 )
-from forms import (
-    SignupForm,
-    LoginForm,
-    SpecimenImageForm,
-    TaxonomyForm,
-    CollectionDetailsForm,
-    EditUserForm,
-    CollectionForm,
-    AddSpecimenToCollectionForm,
-)
+
 from flask_debugtoolbar import DebugToolbarExtension
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import func
 from flask_login import (
-    LoginManager,
-    login_user,
-    login_required,
-    logout_user,
-    current_user,
+    LoginManager
 )
-from extra_funcs import clear_specimen_session, upload_img
 
 # Blueprints
 from auth_bp.auth import auth_bp
@@ -48,10 +26,9 @@ app.register_blueprint(collections_bp)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', "postgres:///virtual_herbarium")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_ECHO"] = True
+# app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY', 'hellosecret1')
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
-# app.config["ImgurKey"] = os.environ.get('IMGUR_KEY")
 
 
 connect_db(app)
