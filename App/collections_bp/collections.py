@@ -20,7 +20,6 @@ collections_bp = Blueprint('collections_bp', __name__, template_folder='template
 #############################
 # Collection routes
 
-
 @collections_bp.route("/collection/new", methods=["POST", "GET"])
 @login_required
 def create_collection():
@@ -30,8 +29,9 @@ def create_collection():
     if form.validate_on_submit():
         name = form.name.data
         info = form.info.data
+        image = form.collection_image.data
 
-        new_collection = Collection(name=name, info=info, user_id=current_user.id)
+        new_collection = Collection(name=name, info=info, user_id=current_user.id, image=image)
         db.session.add(new_collection)
         db.session.commit()
 

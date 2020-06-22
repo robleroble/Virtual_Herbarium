@@ -41,7 +41,7 @@ def signup():
 
         login_user(user)
         flash(f"Welcome {user.username}!", "success")
-        return redirect(f"/profile/{user.id}")
+        return redirect(f"/user/{user.id}")
     else:
         return render_template("signup.html", form=form)
 

@@ -131,7 +131,7 @@ class Collection(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String, nullable=False)
     info = db.Column(db.Text)
-    # image = db.Column(db.Text)
+    image = db.Column(db.Text)
 
     # specimens = db.relationship("Specimen", secondary="collection_specimens", backref="collections")
 

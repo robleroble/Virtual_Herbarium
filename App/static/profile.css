@@ -22,24 +22,6 @@ hr {
 	margin-bottom: 0;
 }
 
-.mainImg {
-	height: 100%;
-	width: 100%;
-	object-fit: cover;
-}
-
-.secondaryImg {
-	height: 33%;
-	width: 100%;
-	object-fit: cover;
-}
-
-.thirdImg {
-	height: 34%;
-	width: 100%;
-	object-fit: cover;
-}
-
 .collectionName,
 .collectionName:hover,
 .collectionName:focus {

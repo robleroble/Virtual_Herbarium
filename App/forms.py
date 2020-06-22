@@ -111,6 +111,7 @@ class CollectionForm(FlaskForm):
 
     name = StringField("Name of Collection", validators=[DataRequired()])
     info = TextAreaField("About this Collection (Optional)")
+    collection_image = StringField("Profile image for collection (optional)")
 
 
 class AddSpecimenToCollectionForm(FlaskForm):

@@ -1,19 +1,15 @@
 const uploadForm = document.querySelector('#uploadForm');
 const urlForm = document.querySelector('#urlForm');
-const toggleBtn = document.querySelector('#toggleForm');
-const formHolder = document.querySelector('#formHolder');
+const toggleCheckbox = document.querySelector('#url-toggle');
 
 function swapForms(e) {
-	console.log(e);
-	if (e.target.innerHTML === 'URL?') {
-		toggleBtn.innerHTML = 'Upload Image?';
+	if (e.target.checked) {
 		uploadForm.className = 'hidden';
 		urlForm.className = '';
 	} else {
-		toggleBtn.innerHTML = 'URL?';
 		uploadForm.className = '';
 		urlForm.className = 'hidden';
 	}
 }
 
-toggleBtn.addEventListener('click', swapForms);
+toggleCheckbox.addEventListener('change', swapForms);

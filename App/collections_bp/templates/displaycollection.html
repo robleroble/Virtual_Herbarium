@@ -12,7 +12,12 @@
     
 <div class="row my-3">
   <div class="col-md-3">
-  <div class="bg-light border rounded py-3 px-3">   
+  <div class="bg-light border rounded py-3 px-3">
+    {% if collection.image %}
+    <img class="img-fluid rounded" src="{{collection.img}}"" alt="">
+    {% else %}
+    <img class="img-fluid rounded" src="../../static/images/collection-placeholder.JPG" alt=""/>
+    {% endif %}   
     <h4 class="my-1">{{collection.name}}</h4>
     <div class="mb-2">
       <p class="d-inline">Created by: </p>
